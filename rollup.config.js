@@ -9,7 +9,6 @@ import { BabelTC39Config } from "./src/babel/tc39-v2/config"
 const isBabel = Boolean(parseInt(process.env.BABEL, 10));
 const isTypescript = !babel;
 const isLegacy = process.env.DECORATORS === 'LEGACY' || isTypescript;
-console.log(isLegacy, isBabel, './src' + (isBabel ? ('/babel' + (isLegacy ? '/legacy' : '/tc39-v2')) : '/typescript') + '/examples.js', isLegacy ? JSON.stringify(BabelLegacyConfig) : BabelTC39Config)
 
 export default {
 	// Pardon this chaos - T
