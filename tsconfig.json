@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "rootDir": "./",
+    "declaration": true,
+    "moduleResolution": "node",
+    "target": "ESNext",
+    "module": "ESNext",
+    "importHelpers": true,
+    "strict": true,
+    "allowJs": true,
+    "removeComments": true,
+    "noEmitOnError": false,
+    "noImplicitAny": false,
+    "noImplicitThis": true,
+    "downlevelIteration": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+  },
+  "include": [
+    "./src/typescript/**/*",
+  ],
+  "exclude": [
+    "node_modules",
+    "public"
+  ]
+}
