@@ -13,7 +13,6 @@
     "typescript": "^4.2.3"
   },
   "scripts": {
-    "compile:typescript": "tsc",
     "compile:typescript:legacy": "BABEL='0' DECORATORS='LEGACY' rollup -c",
     "compile:babel:legacy": "BABEL='1' DECORATORS='LEGACY' rollup -c -w",
     "compile:babel:TC39": "BABEL='1' DECORATORS='TC39' rollup -c -w",

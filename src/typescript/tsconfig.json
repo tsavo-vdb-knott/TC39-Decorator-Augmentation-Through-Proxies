@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "rootDir": "./",
-    "declaration": true,
     "moduleResolution": "node",
     "target": "ESNext",
     "module": "ESNext",
@@ -19,10 +18,10 @@
     "experimentalDecorators": true,
   },
   "include": [
-    "./src/typescript/**/*",
+    "../typescript",
   ],
   "exclude": [
-    "node_modules",
-    "public"
+    "../../node_modules",
+    "../../public"
   ]
 }
