@@ -27,7 +27,7 @@ class DescendantLegacyPropertyExample extends LegacyPropertyExample {
 	 * 3. If we declare it with a Decorator and a Property, it will execute the decorator twice, including the initializer from babel, this is perhaps not what we want at scale
 	 * 
 	 */
-	 @Decorators.Legacy.Simple.Property.logger
+	//  @Decorators.Legacy.Simple.Property.logger
 	hello;
 
 };

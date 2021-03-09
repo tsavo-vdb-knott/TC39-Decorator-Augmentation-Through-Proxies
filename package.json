@@ -20,5 +20,8 @@
     "dev:typescript:legacy": "npm-run-all --parallel compile:typescript:legacy serve",
     "dev:babel:legacy": "npm-run-all --parallel compile:babel:legacy serve",
     "dev:babel:TC39": "npm-run-all --parallel compile:babel:TC39 serve "
+  },
+  "dependencies": {
+    "reflect-metadata": "^0.1.13"
   }
 }
