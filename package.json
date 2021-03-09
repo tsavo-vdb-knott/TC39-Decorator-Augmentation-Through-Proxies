@@ -13,12 +13,12 @@
     "typescript": "^4.2.3"
   },
   "scripts": {
-    "compile:typescript:legacy": "BABEL='0' DECORATORS='LEGACY' rollup -c",
+    "compile:typescript:legacy": "BABEL='0' DECORATORS='LEGACY' rollup -c -w",
     "compile:babel:legacy": "BABEL='1' DECORATORS='LEGACY' rollup -c -w",
     "compile:babel:TC39": "BABEL='1' DECORATORS='TC39' rollup -c -w",
     "serve": "serve public",
-    "dev:babel:legacy": "npm-run-all --parallel compile:babel:legacy serve",
     "dev:typescript:legacy": "npm-run-all --parallel compile:typescript:legacy serve",
+    "dev:babel:legacy": "npm-run-all --parallel compile:babel:legacy serve",
     "dev:babel:TC39": "npm-run-all --parallel compile:babel:TC39 serve "
   }
 }

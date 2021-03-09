@@ -20,8 +20,8 @@ export default {
 	},
 	plugins: [
 		resolve(),
-		...(isBabel ? [babel(isLegacy ? BabelLegacyConfig : BabelTC39Config)] : []),
-		...(isTypescript ? [typescript({ tsconfig: './src/typescript/tsconfig.json' })] : []),
-		commonjs({...(isTypescript && { extensions: ['.js', '.ts'] })}),
+		(isBabel && babel(isLegacy ? BabelLegacyConfig : BabelTC39Config)),
+		(isTypescript && typescript({ tsconfig: './src/typescript/tsconfig.json' })),
+		commonjs({ ...(isTypescript && { extensions: ['.js', '.ts'] }) }),
 	]
 };
