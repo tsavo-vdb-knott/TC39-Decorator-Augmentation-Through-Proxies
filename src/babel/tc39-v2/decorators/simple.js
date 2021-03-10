@@ -5,24 +5,34 @@
 /**
  * 
  * TC39 PROPERTY DECORATOR 
- * 
- * A simple Legacy Logger Decorator, fundamentally can be a function exported as a const,
- * an anonymous arrow function also exported as a const, or an named exported function.
- * 
- * For say a property decorator the legacy spec defines the an object configuration 
- * with Object.defineProperty(proto, name, descriptor); 
- * 
- * @param {Descriptor} descriptor - In Loose Mode - Used with Babel Legacy Decorators, this is effectively an object with a Constructor function returning a Class
- * @returns {void} Legacy Decorator Doesn't Return, it simply assigns in place through with Object.defineProperty(...)
+ * https://github.com/tc39/proposal-decorators
+ *  
  * 
  */
- const logger = function (descriptor) {
-  console.log(descriptor);
-	return descriptor;
+ export function Logger (prototype, { kind, name }) {
+  if (kind === "prop") {
+    let { get, set } = prototype;
+
+    return {
+      get() {
+        // Middleware
+        return get.call(this);
+      },
+
+      set(val) {
+        return set.call(this, val);
+      },
+
+      initialize(initial) {
+        console.log(`initializing ${name} with value ${initial}`);
+        return initial;
+      }
+    };
+  }
 }
 
 export const Property = {
-  logger
+  Logger
 };
 
 

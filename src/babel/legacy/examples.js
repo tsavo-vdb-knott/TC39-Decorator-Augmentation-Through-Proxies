@@ -12,7 +12,7 @@ const Decorators = {
 class LegacyPropertyExample {
 
 	// Simple Legacy Decorator without parameters
-	@Decorators.Legacy.Simple.Property.logger
+	@Decorators.Legacy.Simple.Property.Logger
 	hello = "world";
 
 };
@@ -32,5 +32,3 @@ class DescendantLegacyPropertyExample extends LegacyPropertyExample {
 };
 
 const legacy = new DescendantLegacyPropertyExample();
-
-console.log(legacy);

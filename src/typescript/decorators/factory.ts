@@ -1,4 +1,4 @@
-import type { Constructor, PropertyDecorator } from "./simple";
+import type { Constructor, PropertyDecorator, ClassDecorator } from "./simple";
 
 // If we want to customize how a decorator is applied to a declaration, we can write a decorator factory. A Decorator Factory is simply a function that returns the expression that will be called by the decorator at runtime.
 // We can write a decorator factory in the following fashion
@@ -18,8 +18,6 @@ export type PropertyDecoratorFactory<O = any, T = Function, P extends T | Functi
 const Logger: PropertyDecoratorFactory<{ writeable: boolean }, unknown, any> = (options) => {
   return function (prototype, key, descriptor: PropertyDescriptor) {
     let { [key]: current } = prototype;
-    // !! Note the following log 
-    // console.log(prototype);
     const { writeable } = options || {};
     descriptor = {
       writable: writeable,
@@ -30,20 +28,26 @@ const Logger: PropertyDecoratorFactory<{ writeable: boolean }, unknown, any> = (
 }
 
 
+export type ClassDecoratorFactory<O = any, T = unknown> = { (options?: O): ClassDecorator<T> };
 
+const Demo: ClassDecoratorFactory<{ property?: string }, unknown> = (options) => {
+  return function (definition) {
+    //@ts-ignore
+    definition.DemoClass();
 
+    // Return an anon class 
+    // const clazz = class extends (definition as Constructor<typeof definition>) {
+    //   extended = "Extended";
+    // };
+    // // Attempt to bridge => Not what you want
+    // // Object.setPrototypeOf(clazz.prototype, (definition as Constructor<typeof definition>).prototype);
+    // return clazz;
 
-
-
-
-
-
-
-
-
-
-
-
+    // OR - Personal Preference for Keeping things in tact.
+    // Similar to setting static properties on the definition directly
+    Object.defineProperty((definition as Constructor<typeof definition>), 'extended', { value: "Extended" });
+  };
+}
 
 
 
@@ -54,7 +58,9 @@ export default {
     Logger
   },
   Class: {
-
+    Prototype: {
+      Demo
+    }
   },
 };
 

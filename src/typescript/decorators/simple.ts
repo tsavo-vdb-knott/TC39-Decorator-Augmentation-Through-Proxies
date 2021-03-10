@@ -7,7 +7,8 @@ export type Constructor<C = any> = {
 
 export type PropertyDecorator<T = Function, P extends T | Function | Constructor<T> = any> = { (prototype: P, key: PropertyKey, ...args: any[]): void };
 
-// This is a baseline Typescript Property Decorator, NOT classified as a Property Decorator factory as it doesn't return a function
+// Simple Typescript Property Decorator, 
+// NOT classified as a Property Decorator factory as it doesn't return a function
 const Logger: PropertyDecorator<unknown, any> = (prototype, key) => {
   //@ts-ignore Symbol as Index Ignore
   let { [key]: current } = prototype;

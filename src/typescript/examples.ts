@@ -1,9 +1,10 @@
+import { DemoClass, DemoProperty } from './utils';
+
 import type { ClassDecorator, PropertyDecorator } from './decorators/simple';
-import type { PropertyDecoratorFactory } from './decorators/factory';
+import type { ClassDecoratorFactory, PropertyDecoratorFactory } from './decorators/factory';
 
 import Simple from './decorators/simple';
 import Factory from './decorators/factory';
-import { DemoClass, DemoProperty } from './utils';
 
 const Decorators = {
 	Typescript: {
@@ -13,12 +14,13 @@ const Decorators = {
 };
 
 // Base Class Definition 
-// @(Decorators.Typescript.Simple.Class.Prototype.Demo as ClassDecorator<TypescriptPropertyExample>)
-class TypescriptPropertyExample {
+@(Decorators.Typescript.Simple.Class.Prototype.Demo as ClassDecorator<Example>)
+// @(Decorators.Typescript.Factory.Class.Prototype.Demo as ClassDecoratorFactory<{ property: string }, Example>)({ property: 'world' })
+class Example {
 
-	static DemoClass = () => DemoClass<TypescriptPropertyExample>(TypescriptPropertyExample);
+	static DemoClass = () => DemoClass<Example>(Example);
 
-	static DemoProperty = (key: PropertyKey) => DemoProperty<TypescriptPropertyExample>(TypescriptPropertyExample, key);
+	static DemoProperty = (key: PropertyKey) => DemoProperty<Example>(Example, key);
 
 	/**
 	 * 
@@ -27,12 +29,12 @@ class TypescriptPropertyExample {
 	 * @property {string} hello
 	 * @type {string}
 	 * @default "hello"
-	 * @memberof TypescriptPropertyExample
+	 * @memberof Example
 	 * 
 	 * 
 	 * Loosely Typed Version: @Decorators.Typescript.Factory.Property.logger
 	 */
-	@(Decorators.Typescript.Simple.Property.Logger as PropertyDecorator<TypescriptPropertyExample>)
+	@(Decorators.Typescript.Simple.Property.Logger as PropertyDecorator<Example>)
 	public hello: string = 'hello';
 
 	/**
@@ -41,21 +43,22 @@ class TypescriptPropertyExample {
 	 * @property {string} world
 	 * @type {string}
 	 * @default "world"
-	 * @memberof TypescriptPropertyExample
+	 * @memberof Example
 	 * 
 	 * Loosely Typed Version: @Decorators.Typescript.Factory.Property.logger()
 	 */
-	@(Decorators.Typescript.Factory.Property.Logger as PropertyDecoratorFactory<{ writeable: boolean }, TypescriptPropertyExample>)()
+	@(Decorators.Typescript.Factory.Property.Logger as PropertyDecoratorFactory<{ writeable: boolean }, Example>)()
 	public world: string = 'world';
 
 };
 
-// @(Decorators.Typescript.Simple.Class.Prototype.Demo as ClassDecorator<DescendantTypescriptPropertyExample>)
-class DescendantTypescriptPropertyExample extends TypescriptPropertyExample {
+// @(Decorators.Typescript.Simple.Class.Prototype.Demo as ClassDecorator<DescendantExample>)
+@(Decorators.Typescript.Factory.Class.Prototype.Demo as ClassDecoratorFactory<{ property: string }, DescendantExample>)({ property: 'world' })
+class DescendantExample extends Example {
 
-	static DemoClass = () => DemoClass<DescendantTypescriptPropertyExample>(DescendantTypescriptPropertyExample);
+	static DemoClass = () => DemoClass<DescendantExample>(DescendantExample);
 
-	static DemoProperty = (key: PropertyKey) => DemoProperty<DescendantTypescriptPropertyExample>(DescendantTypescriptPropertyExample, key);
+	static DemoProperty = (key: PropertyKey) => DemoProperty<DescendantExample>(DescendantExample, key);
 
 	/** 
 	 * 
@@ -65,16 +68,13 @@ class DescendantTypescriptPropertyExample extends TypescriptPropertyExample {
 	 * !! 3. If we declare it with a Decorator and a Property, it will execute the decorator TWICE, this is perhaps not what we want at runtime
 	 * 
 	 */
-	@(Decorators.Typescript.Simple.Property.Logger as PropertyDecorator<TypescriptPropertyExample>)
+	@(Decorators.Typescript.Simple.Property.Logger as PropertyDecorator<Example>)
 	public hello: string = "hello 2";
 
-	@(Decorators.Typescript.Factory.Property.Logger as PropertyDecoratorFactory<{ writeable: boolean }, TypescriptPropertyExample>)()
+	@(Decorators.Typescript.Factory.Property.Logger as PropertyDecoratorFactory<{ writeable: boolean }, Example>)()
 	public world: string = 'world 2';
 };
 
-// 1. Call Demo w/o Class Decorator
-TypescriptPropertyExample.DemoProperty('world');
-DescendantTypescriptPropertyExample.DemoProperty('world');
-
-// 2. Add the Decorators to the classes and see the static property access, internally calling DemoClass
+Example.DemoProperty('world');
+DescendantExample.DemoProperty('world');
 
