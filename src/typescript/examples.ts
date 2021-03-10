@@ -1,22 +1,56 @@
-import * as Simple from './decorators/simple';
+import type { PropertyDecorator } from './decorators/simple';
+import type { PropertyDecoratorFactory } from './decorators/factory';
+
+import Simple from './decorators/simple';
+import Factory from './decorators/factory';
+import { Demo } from './utils';
 
 const Decorators = {
 	Typescript: {
 		Simple,
+		Factory
 	}
 };
 
-// Base Class Declaration 
-class Base {
+// Base Class Definition 
+class TypescriptPropertyExample {
 
-	// Simple TC39 Decorator without parameters
-  //@ts-ignore
-	@Decorators.Typescript.Simple.Property.logger
-	hello = 'hello';
+	static Demo = (key: PropertyKey) => Demo<TypescriptPropertyExample>(TypescriptPropertyExample, key);
+
+	/**
+	 * 
+	 * 
+	 * @description A logger property Decorator (No Parameters)
+	 * @property {string} hello
+	 * @type {string}
+	 * @default "hello"
+	 * @memberof TypescriptPropertyExample
+	 * 
+	 * 
+	 * Loosely Typed Version: @Decorators.Typescript.Factory.Property.logger
+	 */
+	@(Decorators.Typescript.Simple.Property.logger as PropertyDecorator<TypescriptPropertyExample>)
+	public hello: string = 'hello';
+
+
+	/**
+	 * 
+	 * @description A logger property Decorator Factory that accepts options
+	 * @property {string} world
+	 * @type {string}
+	 * @default "world"
+	 * @memberof TypescriptPropertyExample
+	 * 
+	 * Loosely Typed Version: @Decorators.Typescript.Factory.Property.logger()
+	 */
+	@(Decorators.Typescript.Factory.Property.logger as PropertyDecoratorFactory<{ writeable: boolean }, TypescriptPropertyExample>)()
+	public world: string = 'world';
 
 };
 
-class DescendantLegacyPropertyExample extends Base {
+class DescendantTypescriptPropertyExample extends TypescriptPropertyExample {
+	static Demo = (key: PropertyKey) => Demo<DescendantTypescriptPropertyExample>(DescendantTypescriptPropertyExample, key);
+
 	/** 
 	 * 
 	 * Noted: 
@@ -25,13 +59,11 @@ class DescendantLegacyPropertyExample extends Base {
 	 * 3. If we declare it with a Decorator and a Property, it will execute the decorator twice, including the initializer from babel, this is perhaps not what we want at scale
 	 * 
 	 */
-    //@ts-ignore
-	 @Decorators.Typescript.Simple.Property.logger
-	hello;
-
+	//  @Decorators.Typescript.Simple.Property.logger
+	// public hello!: string ="world";
 };
 
-const base = new DescendantLegacyPropertyExample();
 
-console.log(base, Object.getOwnPropertyDescriptor(base, 'hello'), "anything")
+TypescriptPropertyExample.Demo('hello');
+DescendantTypescriptPropertyExample.Demo('world');
 

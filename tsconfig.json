@@ -1,0 +1,7 @@
+{
+  "extends": "./src/typescript/tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./",
+    "moduleResolution": "node"
+  }
+}

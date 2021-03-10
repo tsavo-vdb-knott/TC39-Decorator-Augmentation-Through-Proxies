@@ -1,5 +1,6 @@
 {
   "name": "rollup-starter-app",
+  "type": "module",
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/plugin-proposal-decorators": "^7.13.5",
@@ -13,15 +14,16 @@
     "typescript": "^4.2.3"
   },
   "scripts": {
-    "compile:typescript:legacy": "BABEL='0' DECORATORS='LEGACY' rollup -c -w",
+    "compile:typescript": "BABEL='0' DECORATORS='LEGACY' rollup -c -w",
     "compile:babel:legacy": "BABEL='1' DECORATORS='LEGACY' rollup -c -w",
     "compile:babel:TC39": "BABEL='1' DECORATORS='TC39' rollup -c -w",
-    "serve": "serve public",
-    "dev:typescript:legacy": "npm-run-all --parallel compile:typescript:legacy serve",
+    "dev:typescript": "npm-run-all --parallel compile:typescript serve",
     "dev:babel:legacy": "npm-run-all --parallel compile:babel:legacy serve",
-    "dev:babel:TC39": "npm-run-all --parallel compile:babel:TC39 serve "
+    "dev:babel:TC39": "npm-run-all --parallel compile:babel:TC39 serve ",
+    "serve": "serve public"
   },
   "dependencies": {
+    "chalk": "^4.1.0",
     "reflect-metadata": "^0.1.13"
   }
 }

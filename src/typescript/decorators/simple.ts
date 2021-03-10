@@ -1,26 +1,30 @@
 import "reflect-metadata";
 
-//In typescript you only really get these two parameters on property decorators.
-// Them Prototype and Property Key. The legacy babel implementation aims to do more for you in terms of property decoration parameters.
-const logger =  (prototype, key) =>  {
-  let type = Reflect.getMetadata("design:type", prototype, key);
-  // return (prototype, key, descriptor) => {
-    let { [key]: current } = prototype;
-    console.log(prototype, key)
-    Object.defineProperty(prototype, key, {
-      get: () => (console.log(`Getting Property: ${key}`), current),
-      set: next => (console.log(`Updating Property: ${current} => ${next}...`), current = next),
-      enumerable: true,
-      configurable: true,
-    });
-    // return descriptor;
-  // };
+export type Constructor<C = any> = {
+  new(...args: any[]): C
+};
+
+export type PropertyDecorator<T = Function, P extends T | Function | Constructor<T> = any> = { (prototype: P, key: PropertyKey, ...args: any[]): void };
+
+// This is a baseline typescript decorator, NOT classified as a Decorator Factory
+const logger: PropertyDecorator<unknown, any> = (prototype, key) => {
+  //@ts-ignore Symbol as Index Ignore
+  let { [key]: current } = prototype;
+  // Because we are not returning a function here - all we can really do is apply properties straight to the prototype
+  Object.defineProperty(prototype.constructor, key, {
+    get: () => (console.log(`Getting Decorator Property: ${String(key)}`), current),
+    set: next => (console.log(`Updating Decorator Property: ${current} => ${next}...`), current = next),
+    enumerable: true,
+    configurable: true,
+  });
 }
 
-export const Property = {
-  logger
+export default {
+  Property: {
+    logger
+  },
+  Method: {
+
+  },
 };
 
-
-export const Method = {
-};

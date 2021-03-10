@@ -1159,48 +1159,356 @@ var Reflect$1;
     });
 })(Reflect$1 || (Reflect$1 = {}));
 
-const logger = (prototype, key) => {
-    Reflect.getMetadata("design:type", prototype, key);
+const logger$1 = (prototype, key) => {
     let { [key]: current } = prototype;
-    console.log(prototype, key);
-    Object.defineProperty(prototype, key, {
-        get: () => (console.log(`Getting Property: ${key}`), current),
-        set: next => (console.log(`Updating Property: ${current} => ${next}...`), current = next),
+    Object.defineProperty(prototype.constructor, key, {
+        get: () => (console.log(`Getting Decorator Property: ${String(key)}`), current),
+        set: next => (console.log(`Updating Decorator Property: ${current} => ${next}...`), current = next),
         enumerable: true,
         configurable: true,
     });
 };
-const Property = {
-    logger
+var Simple = {
+    Property: {
+        logger: logger$1
+    },
+    Method: {},
 };
-const Method = {};
 
-var Simple = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    Property: Property,
-    Method: Method
-});
+const logger = (options) => {
+    return function (prototype, key, descriptor) {
+    };
+};
+var Factory = {
+    Property: {
+        logger
+    },
+    Method: {},
+};
+
+// https://www.bennadel.com/blog/3942-styling-console-log-output-with-a-chalk-inspired-formatter-using-javascript-proxies.htm
+function echoFactory() {
+
+  var stylers = {
+    // Text colors.
+    black: "color: black",
+    red: "color: red",
+    green: "color: green",
+    blue: "color: blue",
+    yellow: "color: yellow",
+    magenta: "color: magenta",
+    cyan: "color: cyan",
+    white: "color: white",
+    gray: "color: gray",
+    gold: "color: gold",
+
+    // Background colors.
+    bgBlack: "background-color: black",
+    bgRed: "background-color: red",
+    bgGreen: "background-color: green",
+    bgBlue: "background-color: blue",
+    bgYellow: "background-color: yellow",
+    bgMagenta: "background-color: magenta",
+    bgCyan: "background-color: cyan",
+    bgWhite: "background-color: white",
+    bgGray: "background-color: gray",
+    bgGold: "background-color: gold",
+
+    // Text modifiers.
+    bold: "font-weight: bold",
+    lighter: "font-weight: lighter",
+    italic: "font-style: italic",
+    strikethrough: "text-decoration: line-through",
+    underline: "text-decoration: underline",
+    large: "font-size: 16px",
+    larger: "font-size: 22px",
+    largest: "font-size: 26px",
+    massive: "font-size: 36px",
+
+    // Block modifiers.
+    padded: "display: inline-block ; padding: 4px 6px",
+    rounded: "display: inline-block ; border-radius: 4px"
+  };
+
+  var rootStyler = "";
+
+  // As "styler" functions are called, they are going to push values and CSS onto this
+  // queue. Then, when the "log" functions are called, this queue will be processed and
+  // cleared (for the next set of styler invocations).
+  var logItemQueue = [];
+
+  // When the "styler" functions are called, they populate the queue (above). As such,
+  // their return value isn't directly consumable. Therefore, they return this token
+  // which helps our queue-processor differentiate from a styler value vs. a raw value.
+  // And, the embedded warning helps the developer understand where / if they made a
+  // mistake in how the styler return value was used.
+  var ECHO_TOKEN = {
+    warning: "This value should not be used directly - it should be an argument to an echo invocation."
+  };
+  var RESET_INPUT = "%c";
+  var RESET_CSS = "";
+
+  var coreApi = {
+    log: wrapConsoleFunction(console.log),
+    warn: wrapConsoleFunction(console.warn),
+    error: wrapConsoleFunction(console.error),
+    trace: wrapConsoleFunction(console.trace),
+    group: wrapConsoleFunction(console.group),
+    groupEnd: wrapConsoleFunction(console.groupEnd),
+    defineStyler: defineStyler,
+    defineRootStyler: defineRootStyler
+  };
+
+  // We want all of our "stylers" to hang off the core API. And, since the collection
+  // of stylers can change over time (using aliases and customizations), we have to
+  // proxy the core API such that we can dynamically see if a styler is being accessed.
+  var coreApiProxy = new Proxy(
+    coreApi,
+    {
+      get: function (target, prop, receiver) {
+
+        // Intercept styler access.
+        if (prop in stylers) {
+
+          return (createStylerProxy(prop));
+
+        }
+
+        return (target[prop]);
+
+      }
+    }
+  );
+
+  return (coreApiProxy);
+
+  // ---
+  // PUBLIC METHODS.
+  // ---
+
+  // I define the root CSS that all other styles will start with.
+  // --
+  // NOTE: This method should be called before any other stylers are created.
+  function defineRootStyler(rawCSS) {
+
+    rootStyler = rawCSS;
+    return (this);
+
+  }
+
+
+  // I allow new stylers to be defined. The "newStyler" can be a string of raw CSS; or,
+  // it can be a reference to another styler.
+  function defineStyler(name, newStyler) {
+
+    if (typeof (newStyler) === "string") {
+
+      stylers[name] = newStyler;
+      return (this);
+
+    } else {
+
+      stylers[name] = newStyler.proxyCSS;
+      return (this);
+
+    }
+
+  }
+
+  // ---
+  // PRIVATE METHODS.
+  // ---
+
+  // Every "styler" needs to hang off of very other styler. And, as each styler is
+  // accessed, it needs to aggregate the pending CSS from all of the previous stylers
+  // in the access path. To do this, we're going to use a Proxy object.
+  function createStylerProxy(rootProp, rootCSS = "") {
+
+    var proxyCSS = (rootCSS + ";" + stylers[rootProp]);
+
+    // Every "styler" ultimately needs to be a Function call that applies the
+    // aggregate CSS to the given value.
+    var applyAggregateCSS = function (value) {
+
+      logItemQueue.push({
+        value: value,
+        css: (rootStyler + ";" + proxyCSS)
+      });
+
+      return (ECHO_TOKEN);
+
+    };
+
+    var stylerProxy = new Proxy(
+      applyAggregateCSS,
+      {
+        get: function (target, prop) {
+
+          // Since we can alias styler proxies, we need a way to return the
+          // aggregated CSS for any given proxy.
+          if (prop === "proxyCSS") {
+
+            return (proxyCSS);
+
+          }
+
+          if (prop in stylers) {
+
+            return (createStylerProxy(prop, proxyCSS));
+
+          }
+
+        }
+      }
+    );
+
+    return (stylerProxy);
+
+  }
+
+
+  // I provide an echo-based wrapper for the given Console Function. This uses an
+  // internal queue to aggregate values before calling the underlying Console Function
+  // with the desired CSS formatting.
+  function wrapConsoleFunction(consoleFunction) {
+
+    function consoleFunctionWrapper() {
+
+      // As we loop over the arguments, we're going to aggregate a set of inputs
+      // and modifiers. The Inputs will ultimately be collapsed down into a single
+      // string that acts as the first console.log parameter while the modifiers
+      // are then SPREAD into console.log as 2...N.
+      // --
+      // NOTE: After each input/modifier pair, I'm adding a RESET pairing. This
+      // implicitly resets the CSS after every formatted pairing.
+      var inputs = [];
+      var modifiers = [];
+
+      for (var rawArg of arguments) {
+
+        // When the styler methods are called, they return a special token. This
+        // token indicates that we should pull the corresponding value out of the
+        // QUEUE instead of trying to consume the given argument directly.
+        if (rawArg === ECHO_TOKEN) {
+
+          var item = logItemQueue.shift();
+
+          inputs.push(("%c" + item.value), RESET_INPUT);
+          modifiers.push(item.css, RESET_CSS);
+
+          // For every other argument type, output the value directly.
+        } else {
+
+          if (
+            (typeof (rawArg) === "object") ||
+            (typeof (rawArg) === "function")
+          ) {
+
+            inputs.push("%o", RESET_INPUT);
+            modifiers.push(rawArg, RESET_CSS);
+
+          } else {
+
+            inputs.push(("%c" + rawArg), RESET_INPUT);
+            modifiers.push(RESET_CSS, RESET_CSS);
+
+          }
+
+        }
+
+      }
+
+      consoleFunction(inputs.join(""), ...modifiers);
+
+      // Once we output the aggregated value, reset the queue. This should have
+      // already been emptied by the .shift() calls; but the explicit reset here
+      // acts as both a marker of intention as well as a fail-safe.
+      logItemQueue = [];
+
+    }
+
+    return (consoleFunctionWrapper);
+  }
+}
+
+const __echo = echoFactory();
+
+var echo$1 = echo = __echo;
+
+// echo
+//   // The "root" styler is the raw CSS that will be inherited by all other
+//   // stylers, custom and internal.
+//   .defineRootStyler("color: red ;")
+//   .defineStyler("asTag", echo.bold.padded.rounded)
+//   // Notice that the next two stylers are building off of "asTag", a previously
+//   // defined custom styler.
+//   .defineStyler("asWarning", echo.asTag.bgGold.black)
+//   .defineStyler("asAlert", echo.asTag.bgRed.white)
+//   // Custom stylers can also just be raw CSS.
+//   .defineStyler("asMarquee", "font-size: 30px ; padding: 20px 30px 20px 30px ; display: inline-block ; border: 3px solid gold ;");
+
+// Once our custom stylers are defined, we can now use them in combination with
+// the core stylers and the echo-log functions.
+// echo.log(echo.bgMagenta.white.lighter.large("hello world"));
+// echo.log(echo.bgBlack.white.bold.larger("hello world"));
+// echo.log(echo.bgCyan.black.largest.asTag("hello world"));
+// echo.log(echo.bgMagenta.white.lighter.massive.asTag("hello world"));
+// echo.log(echo.cyan.bgBlack("hello world"));
+// echo.log(echo.asWarning.strikethrough("hello world"));
+// echo.log(echo.asAlert.underline("hello world"));
+// echo.log(echo.asMarquee("hello world"));
+
+// Using the extended colors.
+// echo.log(
+//   echo.bgDodgerblue.white.largest.asTag.lighter("Hot"),
+//   echo.bgDimgray.white.largest.asTag("Diggity"),
+//   echo.bgRebeccapurple.white.largest.asTag.lighter("Dog"),
+//   echo.bgYellowgreen.white.largest.asTag("That's"),
+//   echo.bgTomato.white.largest.asTag.lighter("Cool!")
+// );
+
+// // And, of course, these stylers can be mixed with "raw" values as well.
+// echo.log(
+//   "Raw value",
+//   echo.bgGray.white.asTag("Styled value"),
+//   ["Raw value"])
+
+echo$1.defineStyler("spaced", "padding: 8px;");
+
+const { log, bold, italic, spaced } = echo$1;
+const Demo = (definition, key) => {
+    const instance = new definition();
+    log("============================================================================", spaced(" "), spaced(" "));
+    log(italic("Constructor Name: "), bold(`${instance.constructor.name}`), spaced(" "));
+    log(italic("OwnPropertyDescriptor: InstanceType<"), bold(`${instance.constructor.name}`), ">", bold(`['${String(key)}']`), ": ", spaced(" "), Object.getOwnPropertyDescriptor(instance, key), spaced(" "));
+    log(italic("Class: InstanceType<"), bold(`${instance.constructor.name}`), ">: ", spaced("                "), instance, spaced(" "));
+    return instance;
+};
 
 const Decorators = {
     Typescript: {
         Simple,
+        Factory
     }
 };
-class Base {
+class TypescriptPropertyExample {
     constructor() {
         this.hello = 'hello';
+        this.world = 'world';
     }
 }
+TypescriptPropertyExample.Demo = (key) => Demo(TypescriptPropertyExample, key);
 __decorate([
     Decorators.Typescript.Simple.Property.logger,
-    __metadata("design:type", Object)
-], Base.prototype, "hello", void 0);
-class DescendantLegacyPropertyExample extends Base {
+    __metadata("design:type", String)
+], TypescriptPropertyExample.prototype, "hello", void 0);
+__decorate([
+    Decorators.Typescript.Factory.Property.logger(),
+    __metadata("design:type", String)
+], TypescriptPropertyExample.prototype, "world", void 0);
+class DescendantTypescriptPropertyExample extends TypescriptPropertyExample {
 }
-__decorate([
-    Decorators.Typescript.Simple.Property.logger,
-    __metadata("design:type", Object)
-], DescendantLegacyPropertyExample.prototype, "hello", void 0);
-const base = new DescendantLegacyPropertyExample();
-console.log(base, Object.getOwnPropertyDescriptor(base, 'hello'), "anything");
+DescendantTypescriptPropertyExample.Demo = (key) => Demo(DescendantTypescriptPropertyExample, key);
+TypescriptPropertyExample.Demo('hello');
+DescendantTypescriptPropertyExample.Demo('world');
 //# sourceMappingURL=index.js.map
