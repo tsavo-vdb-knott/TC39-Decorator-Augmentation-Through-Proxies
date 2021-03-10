@@ -2,6 +2,11 @@
   "extends": "./src/typescript/tsconfig.json",
   "compilerOptions": {
     "rootDir": "./",
-    "moduleResolution": "node"
-  }
+    "moduleResolution": "node",
+    "experimentalDecorators": true
+  },
+  "include": [
+    "./src"
+  ],
+ 
 }

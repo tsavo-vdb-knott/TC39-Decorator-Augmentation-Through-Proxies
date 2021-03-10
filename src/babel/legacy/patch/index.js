@@ -1,4 +1,8 @@
 // https://github.com/elderapo/babel-7-property-decorator-issue/blob/fixPropertyDecorator-fix/src/index.ts
+import echo from '../../../output/echo';
+import '../../../output/custom-echo-styles';
+const { log, bold, italic, spaced } = echo;
+
 
 export function Property(decorator) {
   return (
@@ -10,7 +14,8 @@ export function Property(decorator) {
     decorator(prototype, key, descriptor);
 
     const initialization = () => {
-      console.log("Initializing property from: ", prototype.constructor.name);
+      log("============================================================================", spaced(" "), spaced(" "))
+      log(italic("Initializing property from:"), bold(`${prototype.constructor.name}`), spaced(" "));
       return initializer.apply(arguments)
     }
 

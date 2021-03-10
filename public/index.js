@@ -1159,31 +1159,38 @@ var Reflect$1;
     });
 })(Reflect$1 || (Reflect$1 = {}));
 
-const logger$1 = (prototype, key) => {
+const Logger$1 = (prototype, key) => {
     let { [key]: current } = prototype;
-    Object.defineProperty(prototype.constructor, key, {
-        get: () => (console.log(`Getting Decorator Property: ${String(key)}`), current),
-        set: next => (console.log(`Updating Decorator Property: ${current} => ${next}...`), current = next),
+    Object.defineProperty(prototype, key, {
+        get: () => (console.log(`Getting Decorator Property: ${String(key)} - [ ${current} ]`), current),
+        set: next => (console.log(`Updating Decorator Property: [ ${current} ] => [ ${next} ]...`), current = next),
         enumerable: true,
         configurable: true,
     });
 };
+const Demo = (definition) => {
+    definition.DemoClass();
+};
 var Simple = {
     Property: {
-        logger: logger$1
+        Logger: Logger$1
     },
-    Method: {},
+    Class: {
+        Prototype: {
+            Demo
+        }
+    },
 };
 
-const logger = (options) => {
+const Logger = (options) => {
     return function (prototype, key, descriptor) {
     };
 };
 var Factory = {
     Property: {
-        logger
+        Logger
     },
-    Method: {},
+    Class: {},
 };
 
 // https://www.bennadel.com/blog/3942-styling-console-log-output-with-a-chalk-inspired-formatter-using-javascript-proxies.htm
@@ -1476,13 +1483,17 @@ var echo$1 = echo = __echo;
 echo$1.defineStyler("spaced", "padding: 8px;");
 
 const { log, bold, italic, spaced } = echo$1;
-const Demo = (definition, key) => {
+const DemoProperty = (definition, key) => {
     const instance = new definition();
-    log("============================================================================", spaced(" "), spaced(" "));
+    log("=========================== [ PROPERTY DECORATOR DEMO ] =======================================", spaced(" "), spaced(" "));
     log(italic("Constructor Name: "), bold(`${instance.constructor.name}`), spaced(" "));
     log(italic("OwnPropertyDescriptor: InstanceType<"), bold(`${instance.constructor.name}`), ">", bold(`['${String(key)}']`), ": ", spaced(" "), Object.getOwnPropertyDescriptor(instance, key), spaced(" "));
     log(italic("Class: InstanceType<"), bold(`${instance.constructor.name}`), ">: ", spaced("                "), instance, spaced(" "));
-    return instance;
+};
+const DemoClass = (definition) => {
+    log("=========================== [ CLASS DECORATOR DEMO ] ===========================================", spaced(" "), spaced(" "));
+    log(italic("Class Name: "), bold(`${definition.name}`), spaced(" "));
+    log(italic("Class: ConstructorType<"), bold(`${definition.constructor.name}`), ">: ", spaced("                "), definition.constructor, spaced(" "));
 };
 
 const Decorators = {
@@ -1497,18 +1508,33 @@ class TypescriptPropertyExample {
         this.world = 'world';
     }
 }
-TypescriptPropertyExample.Demo = (key) => Demo(TypescriptPropertyExample, key);
+TypescriptPropertyExample.DemoClass = () => DemoClass(TypescriptPropertyExample);
+TypescriptPropertyExample.DemoProperty = (key) => DemoProperty(TypescriptPropertyExample, key);
 __decorate([
-    Decorators.Typescript.Simple.Property.logger,
+    Decorators.Typescript.Simple.Property.Logger,
     __metadata("design:type", String)
 ], TypescriptPropertyExample.prototype, "hello", void 0);
 __decorate([
-    Decorators.Typescript.Factory.Property.logger(),
+    Decorators.Typescript.Factory.Property.Logger(),
     __metadata("design:type", String)
 ], TypescriptPropertyExample.prototype, "world", void 0);
 class DescendantTypescriptPropertyExample extends TypescriptPropertyExample {
+    constructor() {
+        super(...arguments);
+        this.hello = "hello 2";
+        this.world = 'world 2';
+    }
 }
-DescendantTypescriptPropertyExample.Demo = (key) => Demo(DescendantTypescriptPropertyExample, key);
-TypescriptPropertyExample.Demo('hello');
-DescendantTypescriptPropertyExample.Demo('world');
+DescendantTypescriptPropertyExample.DemoClass = () => DemoClass(DescendantTypescriptPropertyExample);
+DescendantTypescriptPropertyExample.DemoProperty = (key) => DemoProperty(DescendantTypescriptPropertyExample, key);
+__decorate([
+    Decorators.Typescript.Simple.Property.Logger,
+    __metadata("design:type", String)
+], DescendantTypescriptPropertyExample.prototype, "hello", void 0);
+__decorate([
+    Decorators.Typescript.Factory.Property.Logger(),
+    __metadata("design:type", String)
+], DescendantTypescriptPropertyExample.prototype, "world", void 0);
+TypescriptPropertyExample.DemoProperty('world');
+DescendantTypescriptPropertyExample.DemoProperty('world');
 //# sourceMappingURL=index.js.map

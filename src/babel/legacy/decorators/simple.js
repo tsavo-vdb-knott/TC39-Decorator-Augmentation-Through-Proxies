@@ -24,10 +24,8 @@ import * as Patch from '../patch/index'
  * !! Noted: Object.defineProperty(...) does not have an initializer 
  * 
  */
-const logger = (prototype, key, descriptor) => {
-
+const logger = Patch.Property((prototype, key) => {
   let { [key]: current } = prototype;
-
   // When extended, prototype is now actually Base and the target is the extending class Base2
   // Babel provides an initializer with the legacy spec which also lets us target the Instance of the prototype at initialization aka when new Base2 is called, it requires a scope bound function for this to be accurate.
   Object.defineProperty(prototype, key, {
@@ -36,10 +34,10 @@ const logger = (prototype, key, descriptor) => {
     enumerable: true,
     configurable: true,
   });
-}
+})
 
 export const Property = {
-  logger: Patch.Property(logger)
+  logger
 }
 
 
