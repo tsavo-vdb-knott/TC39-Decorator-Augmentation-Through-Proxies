@@ -1,5 +1,5 @@
 # TS Decorator Augmentation Through Proxies
- Demo + Source Code for the CincyJS Talk:
+Playground, Demo, Source Code for the CinciJS Talk:
  
  Considerate Decorators & Convenient Proxies - Metaprogramming for everyone.
  - By: Tsavo van den berg, Knott
